@@ -402,12 +402,16 @@ static int load_cadata(lua_State *L)
   {
     if (!X509_STORE_add_cert(store, cert))
     {
-      X509_free(cert);
-      BIO_free(bio);
-      lua_pushboolean(L, 0);
-      lua_pushfstring(L, "error loading CA data (%s)",
-        ERR_reason_error_string(ERR_get_error()));
-      return 2;
+      err = ERR_get_error();
+      if (ERR_GET_REASON(err) != X509_R_CERT_ALREADY_IN_HASH_TABLE)
+      {
+        X509_free(cert);
+        BIO_free(bio);
+        lua_pushboolean(L, 0);
+        lua_pushfstring(L, "error loading CA data (%s)",
+          ERR_reason_error_string(err));
+        return 2;
+      }
     }
     loaded = true;
     X509_free(cert);
@@ -451,12 +455,16 @@ static int load_cadata(lua_State *L)
   {
     if (!X509_STORE_add_crl(store, crl))
     {
-      X509_CRL_free(crl);
-      BIO_free(bio);
-      lua_pushboolean(L, 0);
-      lua_pushfstring(L, "error loading CA data (%s)",
-        ERR_reason_error_string(ERR_get_error()));
-      return 2;
+      err = ERR_get_error();
+      if (ERR_GET_REASON(err) != X509_R_CERT_ALREADY_IN_HASH_TABLE)
+      {
+        X509_CRL_free(crl);
+        BIO_free(bio);
+        lua_pushboolean(L, 0);
+        lua_pushfstring(L, "error loading CA data (%s)",
+            ERR_reason_error_string(err));
+        return 2;
+      }
     }
     X509_CRL_free(crl);
     ERR_clear_error();
