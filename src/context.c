@@ -432,6 +432,7 @@ static int load_cadata(lua_State *L)
       lua_pushfstring(L, "error loading CA data (%s)",
         ERR_reason_error_string(ERR_get_error()));
     }
+    BIO_free(bio);
     return 2;
   }
   ERR_clear_error();
@@ -440,6 +441,7 @@ static int load_cadata(lua_State *L)
   {
     lua_pushboolean(L, 0);
     lua_pushliteral(L, "error loading CA data (BIO reset failed)");
+    BIO_free(bio);
     return 2;
   }
 
